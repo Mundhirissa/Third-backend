@@ -1,0 +1,34 @@
+package com.example.Final.repo;
+
+import com.example.Final.model.Booking;
+import com.example.Final.model.Payment;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface Paymentrepo extends JpaRepository <Payment,Long>{
+    Payment findByControlNumber(String controlNumber);
+    Optional<Payment> findByBooking(Booking booking);
+
+    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.paymentstatus = 'paid'")
+    Long findTotalAmountForPaidPayments();
+
+
+    @Query("SELECT p FROM Payment p WHERE p.booking.bookingId = :bookingId")
+    Payment findByBookingId(@Param("bookingId") Long bookingId);
+
+    @Query("SELECT SUM(p.amount) " +
+            "FROM Payment p " +
+            "JOIN p.booking b " +
+            "WHERE p.paymentstatus = 'paid' " +
+            "AND b.stadium.stadiumid = :stadiumid")
+    Long findTotalAmountByStadiumIdAndStatusPaid(@Param("stadiumid") Long stadiumid);
+
+
+
+
+}
