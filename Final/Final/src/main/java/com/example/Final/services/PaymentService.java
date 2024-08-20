@@ -8,9 +8,11 @@ import com.example.Final.repo.Paymentrepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -54,7 +56,6 @@ public class PaymentService {
 
 
 
-
     public String generateControlNumber(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found."));
@@ -63,7 +64,6 @@ public class PaymentService {
             throw new IllegalStateException("Booking is not confirmed.");
         }
 
-
         String controlNumber = generateRandomControlNumber();
         Long amount = determineAmount(booking.getStadium(), booking.getStartTime());
 
@@ -71,19 +71,20 @@ public class PaymentService {
         payment.setBooking(booking);
         payment.setAmount(amount);
         payment.setPaymentstatus("pending");
-        payment.setPaymentdate(LocalDateTime.now().toString());
+        payment.setPaymentdate(LocalDate.now());  // Use LocalDate
         payment.setControlNumber(controlNumber);
 
         paymentRepository.save(payment);
 
         return controlNumber;
     }
+
     private String generateRandomControlNumber() {
-        String timestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(LocalDateTime.now());
+        String timestamp = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDate.now()); // Use LocalDate
         String randomString = new Random().ints(6, 0, 36)
                 .mapToObj(i -> "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".substring(i, i + 1))
                 .collect(Collectors.joining());
-        return "MU"+timestamp + randomString;
+        return "MU" + timestamp + randomString;
     }
 
 
@@ -108,5 +109,14 @@ public class PaymentService {
         return paymentRepository.findTotalAmountByStadiumIdAndStatusPaid(stadiumid);
     }
 
+
+    public List<Map<String, Object>> getTotalAmountPerYear() {
+        return paymentRepository.findTotalAmountPerYear();
+    }
+
+
+    public List<Map<String, Object>> getAmountPerYearPerStadium() {
+        return paymentRepository.findAmountPerYearPerStadium();
+    }
 
 }

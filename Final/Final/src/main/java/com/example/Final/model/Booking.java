@@ -28,4 +28,11 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "categoryid")
     private Category category;
+
+
+
+    public void cancelBooking() {
+        this.status = "canceled";
+    }
+
 }

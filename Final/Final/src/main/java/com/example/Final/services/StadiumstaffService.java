@@ -1,10 +1,12 @@
 package com.example.Final.services;
 
+import com.example.Final.Enum.Role;
 import com.example.Final.model.Stadium;
 import com.example.Final.model.Stadiumstaff;
 import com.example.Final.repo.Stadiumrepo;
 import com.example.Final.repo.Stadiumstaffreop;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,9 @@ public class StadiumstaffService {
 
     @Autowired
     private Stadiumstaffreop stadiumstaffRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 
     @Autowired
@@ -38,7 +43,7 @@ public class StadiumstaffService {
         Stadium stadium = stadiumRepository.findById(stadiumId)
                 .orElseThrow(() -> new RuntimeException("Stadium not found with id " + stadiumId));
         stadiumstaff.setStadium(stadium);
-        stadiumstaff.setRole("staff");
+        stadiumstaff.setRole(Role.staff);
         return stadiumstaffRepository.save(stadiumstaff);
     }
 

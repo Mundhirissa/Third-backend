@@ -1,5 +1,6 @@
 package com.example.Final.model;
 
+import com.example.Final.Enum.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,6 +16,8 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private String role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 }

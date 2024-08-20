@@ -4,6 +4,7 @@ import com.example.Final.model.Stadiumstaff;
 import com.example.Final.services.StadiumstaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,9 @@ public class StadiumstaffController {
 
     @Autowired
     private StadiumstaffService stadiumstaffService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @GetMapping
     public List<Stadiumstaff> getAllStadiumstaff() {
@@ -36,7 +40,7 @@ public class StadiumstaffController {
         stadiumstaff.setLastname((String) payload.get("lastname"));
         stadiumstaff.setUsername((String) payload.get("username"));
         stadiumstaff.setEmail((String) payload.get("email"));
-        stadiumstaff.setPassword((String) payload.get("password"));
+        stadiumstaff.setPassword(passwordEncoder.encode((String) payload.get("password")));
         Long stadiumId = ((Number) payload.get("stadiumId")).longValue();
         return stadiumstaffService.createStadiumstaff(stadiumstaff, stadiumId);
     }

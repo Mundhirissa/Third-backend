@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +57,6 @@ public class PaymentController {
         paymentService.deletePayment(id);
     }
 
-
-
     @PostMapping("/generate-control-number")
     public ResponseEntity<?> generateControlNumber(@RequestBody Map<String, Long> request) {
         Long bookingId = request.get("bookingId");
@@ -70,12 +69,11 @@ public class PaymentController {
         response.put("controlNumber", controlNumber);
         response.put("amount", payment.getAmount());
         response.put("paymentstatus", payment.getPaymentstatus());
-        response.put("paymentdate", payment.getPaymentdate());
+        response.put("paymentdate", payment.getPaymentdate());  // Adjust to LocalDate
         response.put("bookingId", payment.getBooking().getBookingId());
         response.put("stadium", payment.getBooking().getStadium());
         return ResponseEntity.ok(response);
     }
-
 
     @PostMapping("/make-payment")
     public ResponseEntity<?> makePayment(@RequestBody Map<String, String> request) {
@@ -105,7 +103,7 @@ public class PaymentController {
 
         // Update payment status
         payment.setPaymentstatus("paid");
-        payment.setPaymentdate(LocalDateTime.now().toString());
+        payment.setPaymentdate(LocalDate.now());  // Use LocalDate
         paymentrepo.save(payment);
 
         // Send email notification
@@ -117,11 +115,9 @@ public class PaymentController {
 
         emailService.sendEmail(userEmail, subject, text);
 
-
         // Return success response
         return ResponseEntity.ok("Payment successful");
     }
-
 
     @GetMapping("/total-paid-amount")
     public Long getTotalPaidAmount() {
@@ -142,6 +138,23 @@ public class PaymentController {
         } else {
             return ResponseEntity.notFound().build(); // Return 404 if no data found
         }
+    }
+
+
+    @GetMapping("/total-amount-per-year")
+    public List<Map<String, Object>> getTotalAmountPerYear() {
+        return paymentService.getTotalAmountPerYear();
+    }
+
+    @GetMapping("/amount-per-year-per-stadium")
+    public List<Map<String, Object>> getAmountPerYearPerStadium() {
+        return paymentService.getAmountPerYearPerStadium();
+    }
+
+
+    @GetMapping("/payment/{controlNumber}")
+    public Payment findPaymentByControlNumber(@PathVariable String controlNumber) {
+        return paymentrepo.findByControlNumber(controlNumber);
     }
 
 

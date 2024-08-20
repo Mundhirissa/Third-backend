@@ -5,9 +5,11 @@ import com.example.Final.model.Stadium;
 import com.example.Final.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +23,23 @@ public interface Bookingrepo extends JpaRepository<Booking, Long> {
     List<Map<String, Object>> countBookingsByStadium();
     List<Booking> findByStatus(String status);
     long count();
+
+    @Query("SELECT FUNCTION('MONTH', b.date) AS month, COUNT(b) AS count " +
+            "FROM Booking b " +
+            "WHERE FUNCTION('YEAR', b.date) = :year " +
+            "GROUP BY FUNCTION('MONTH', b.date)")
+    List<Object[]> countBookingsPerMonth(@Param("year") int year);
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.stadium.stadiumid = :stadiumId")
+    Long countBookingsByStadium(@Param("stadiumId") Long stadiumId);
+
+
+    @Query("SELECT FUNCTION('YEAR', b.date) AS year, COUNT(b) AS count " +
+            "FROM Booking b " +
+            "GROUP BY FUNCTION('YEAR', b.date)")
+    List<Object[]> countBookingsPerYear();
+
+
     List<Booking> findByStadium(Stadium stadium);
     List<Booking> findByDate(LocalDate date);
     List<Booking> findByUser(Optional<User> user);

@@ -13,9 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -122,5 +125,52 @@ public class BookingService {
         return bookingrepo.countBookingsByStadium();
     }
 
+    public Map<Month, Long> getBookingsPerMonth(int year) {
+        List<Object[]> results = bookingrepo.countBookingsPerMonth(year);
+
+        Map<Month, Long> bookingsPerMonth = new HashMap<>();
+        for (Object[] result : results) {
+            Integer monthInt = (Integer) result[0];
+            Long count = (Long) result[1];
+
+            Month month = Month.of(monthInt);  // Convert integer to Month enum
+            bookingsPerMonth.put(month, count);
+        }
+
+        return bookingsPerMonth;
+    }
+
+
+
+    public Map<Integer, Long> getBookingsPerYear() {
+        List<Object[]> results = bookingrepo.countBookingsPerYear();
+
+        Map<Integer, Long> bookingsPerYear = new HashMap<>();
+        for (Object[] result : results) {
+            Integer year = (Integer) result[0];
+            Long count = (Long) result[1];
+
+            bookingsPerYear.put(year, count);
+        }
+
+        return bookingsPerYear;
+    }
+
+
+    public boolean cancelBooking(Long bookingId) {
+        Optional<Booking> bookingOptional = bookingrepo.findById(bookingId);
+        if (bookingOptional.isPresent()) {
+            Booking booking = bookingOptional.get();
+            booking.cancelBooking();
+            bookingrepo.save(booking);
+            return true;
+        }
+        return false; // Booking not found
+    }
+
+
+    public Long getTotalBookingsByStadium(Long stadiumId) {
+        return bookingrepo.countBookingsByStadium(stadiumId);
+    }
 
 }

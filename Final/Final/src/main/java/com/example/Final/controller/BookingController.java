@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -135,6 +136,36 @@ public class BookingController {
         List<Map<String, Object>> result = bookingService.countBookingsByStadium();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+
+    @GetMapping("/bookings/count-per-month")
+    public Map<Month, Long> getBookingsPerMonth(@RequestParam int year) {
+        return bookingService.getBookingsPerMonth(year);
+    }
+
+    @GetMapping("/count-per-year")
+    public Map<Integer, Long> getBookingsPerYear() {
+        return bookingService.getBookingsPerYear();
+    }
+
+
+    @PutMapping("/{bookingId}/cancel")
+    public ResponseEntity<String> cancelBooking(@PathVariable Long bookingId) {
+        boolean isCanceled = bookingService.cancelBooking(bookingId);
+        if (isCanceled) {
+            return ResponseEntity.ok("Booking canceled successfully.");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @GetMapping("/bookings/count-by-stadium")
+    public Long countBookingsByStadium(@RequestParam Long stadiumId) {
+        return bookingService.getTotalBookingsByStadium(stadiumId);
+    }
+
+
 
 
 }
