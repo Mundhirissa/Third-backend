@@ -1,6 +1,8 @@
 package com.example.Final.controller;
 
+import com.example.Final.Enum.Role;
 import com.example.Final.dto.Loginrequest;
+import com.example.Final.model.Stadiumstaff;
 import com.example.Final.model.User;
 import com.example.Final.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,19 +50,28 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Loginrequest loginrequest) {
-        Optional<User> userOptional = userService.login(loginrequest.getUsername(), loginrequest.getPassword());
+    public ResponseEntity<?> login(@RequestBody Loginrequest loginRequest) {
+        Optional<User> userOptional = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // Create a response object that includes the username and role
-            Map<String, String> response = new HashMap<>();
+            Map<String, Object> response = new HashMap<>();
             response.put("message", "Login successful");
             response.put("username", user.getUsername());
-            response.put("role", user.getRole());
+            response.put("role", user.getRole().name()); // Get the name of the enum value
+
+            // Check if the role is STAFF and the user is an instance of Stadiumstaff
+            if (user.getRole() == Role.staff && user instanceof Stadiumstaff) {
+                Stadiumstaff staff = (Stadiumstaff) user;
+                response.put("stadiumId", staff.getStadium() != null ? staff.getStadium().getStadiumid() : null);
+            }
+
             return ResponseEntity.ok(response);
         }
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
     }
+
 
     @GetMapping("/search")
     public List<User> searchUsers(@RequestParam String keyword) {
@@ -78,6 +89,14 @@ public class UserController {
     @GetMapping("/username/{username}")
     public Optional<User> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username);
+    }
+
+
+
+    @PostMapping("/create/admin")
+    public ResponseEntity<User> createAdminUser(@RequestBody User user) {
+        User createdAdmin = userService.createAdminUser(user);
+        return ResponseEntity.ok(createdAdmin);
     }
 
 

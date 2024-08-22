@@ -31,6 +31,8 @@ public class StadiumService {
         stadium.setName(stadiumDetails.getName());
         stadium.setCapacity(stadiumDetails.getCapacity());
         stadium.setLocation(stadiumDetails.getLocation());
+        stadium.setDaytimePrice(stadiumDetails.getDaytimePrice());
+        stadium.setNighttimePrice(stadiumDetails.getNighttimePrice());
         return stadiumRepository.save(stadium);
     }
 

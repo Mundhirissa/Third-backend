@@ -16,6 +16,8 @@ public class Stadium {
     private String name;
     private Long capacity;
     private String location;
+    private Long daytimePrice;
+    private Long nighttimePrice;
 
 
 

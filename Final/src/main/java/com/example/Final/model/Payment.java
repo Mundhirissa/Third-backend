@@ -3,6 +3,8 @@ package com.example.Final.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 public class Payment {
@@ -11,9 +13,11 @@ public class Payment {
     private Long Paymentid;
     private  Long amount;
     private  String paymentstatus;
-    private String paymentdate;
 
-    @ManyToOne
+    private LocalDate paymentdate;
+    private String controlNumber;
+
+    @OneToOne
     @JoinColumn( name = "Bookingid")
     private Booking booking;
 
