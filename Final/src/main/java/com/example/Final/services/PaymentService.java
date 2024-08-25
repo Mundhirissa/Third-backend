@@ -119,4 +119,8 @@ public class PaymentService {
         return paymentRepository.findAmountPerYearPerStadium();
     }
 
+
+    public List<Payment> getPaymentsByStadiumId(Long stadiumId) {
+        return paymentRepository.findByBooking_Stadium_Stadiumid(stadiumId);
+    }
 }

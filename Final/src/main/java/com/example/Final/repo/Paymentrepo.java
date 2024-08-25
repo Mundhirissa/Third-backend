@@ -54,6 +54,7 @@ public interface Paymentrepo extends JpaRepository <Payment,Long>{
             "GROUP BY b.stadium.name, YEAR(p.paymentdate)")
     List<Map<String, Object>> findAmountPerYearPerStadium();
 
+    List<Payment> findByBooking_Stadium_Stadiumid(Long stadiumId);
 
 
 }

@@ -156,6 +156,10 @@ public class PaymentController {
     public Payment findPaymentByControlNumber(@PathVariable String controlNumber) {
         return paymentrepo.findByControlNumber(controlNumber);
     }
+    @GetMapping("/stadium/{stadiumId}")
+    public List<Payment> getPaymentsByStadiumId(@PathVariable Long stadiumId) {
+        return paymentService.getPaymentsByStadiumId(stadiumId);
+    }
 
 
 }
